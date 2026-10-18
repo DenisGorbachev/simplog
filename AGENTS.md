@@ -536,7 +536,12 @@ A package that has a remote whose name contains `public` or `pre-public` and end
 
 #### package simplog
 
-- Every `struct`, `enum`, `union` must have a corresponding `macro_rules!` that passes [Arc macro constructor requirements](#arc-macro-constructor-for-type-t-requirements)
+- Every struct:
+  - Must have a corresponding `macro_rules!` that passes [Macro constructor for T requirements](#macro-constructor-for-t-requirements)
+  - Must have a corresponding `macro_rules!` that passes [Macro constructor for Arc<T> requirements](#macro-constructor-for-arct-requirements)
+- Every [envelope](#envelope-enum):
+  - For each variant:
+    - Must have a corresponding `macro_rules!` that passes [Macro constructor for enum E variant V requirements](#macro-constructor-for-enum-e-variant-v-requirements)
 
 ##### struct GithubRepo
 
@@ -594,14 +599,41 @@ A package that has a remote whose name contains `public` or `pre-public` and end
   - `inner: T`
   - `dependencies: Vec<Arc<Prop>>`
 
-##### Arc macro constructor for type T requirements
+##### Macro constructor for T requirements
 
 - Must have `#[macro_export]`
-- Must have a name equal to `T` in snake case
+- Must have a name equal to `{snake_case(T)}`
+- Every arm:
+  - Must call a `T` constructor
+  - Must call `.clone()` on those constructor args that have a concrete non-generic type that is cheaply clonable (e.g. `Arc`, `Rc`)
+
+##### Macro constructor for Arc<T> requirements
+
+- Must have `#[macro_export]`
+- Must have a name equal to `arc_{snake_case(T)}`
 - Every arm:
   - Must call `Arc::new`
-  - Must call a `T` constructor in `Arc::new`
-  - Must call `.clone()` on those constructor args that have a cheaply clonable type (e.g. `Arc`, `Rc`)
+  - Must call a [macro constructor for T](#macro-constructor-for-t-requirements)
+
+##### Macro constructor for enum E variant V requirements
+
+- Must have `#[macro_export]`
+- Must have a name equal to `{snake_case(E)}_{snake_case(V)}`
+- Every arm:
+  - Must call `E::V`
+  - Must call a [macro constructor for T](#macro-constructor-for-t-requirements) (where `T` is the inner type of variant `V`)
+
+##### Macro constructor of Arc of enum E of variant V requirements
+
+- Must have `#[macro_export]`
+- Must have a name equal to `arc_{snake_case(E)}_{snake_case(V)}`
+- Every arm:
+  - Must call `Arc::new`
+  - Must call a [Macro constructor for enum E variant V requirements](#macro-constructor-for-enum-e-variant-v-requirements)
+
+##### Envelope enum
+
+A enum whose every variant is a tuple with exactly one inner type.
 
 ### Error handling
 
