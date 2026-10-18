@@ -527,6 +527,82 @@ A package that has a remote whose name contains `public` or `pre-public` and end
   - Don't use them in new code because their checker and preprocessor concepts have been superseded by explicit conversion impls.
 - Use the `SerializeTransparent` derive for a refined newtype that must serialize identically to its inner field while using Serde's `try_from` container attribute for validated deserialization.
 
+### simplog repo spec
+
+- Every Rust source file:
+  - May have the following declarations:
+    - `use nu_path::RelativePathBuf;`
+    - `use interval_zoo::IntervalStrictFiniteIncInc;`
+
+#### package simplog
+
+- Every `struct`, `enum`, `union` must have a corresponding `macro_rules!` that passes [Arc macro constructor requirements](#arc-macro-constructor-for-type-t-requirements)
+
+##### struct GithubRepo
+
+- Must have fields:
+  - `owner: String`
+  - `name: String`
+
+##### struct GithubCommit
+
+- Must have fields:
+  - `repo: Arc<GithubRepo>`
+  - `oid: GitOid`
+
+##### struct GithubSource
+
+- Must have fields:
+  - `commit: Arc<GithubCommit>`
+  - `path: RelativePathBuf`
+  - `line_range: IntervalStrictFiniteIncInc<u64>`
+
+##### struct HtmlPageSource
+
+- Must have fields:
+  - `url: Url`
+
+##### enum Source
+
+- Must have variants:
+  - `Github(GithubSource)`
+  - `HtmlPage(HtmlPageSource)`
+
+##### struct ExcerptProp
+
+- Must have fields:
+  - `content: String`
+  - `source: Source`
+
+##### struct InferenceProp
+
+- Must have fields:
+  - `content: String`
+  - `dependencies: Vec<Arc<Prop>>`
+
+##### enum Prop
+
+- Must have variants:
+  - `Excerpt(ExcerptProp)`
+  - `Inference(InferenceProp)`
+
+##### struct Value
+
+- Must have generics:
+  - `T`
+- Must have fields:
+  - `inner: T`
+  - `dependencies: Vec<Arc<Prop>>`
+
+##### Arc macro constructor for type T requirements
+
+- Must have `#[macro_export]`
+- Must have a name equal to `T` in snake case
+- Every arm:
+  - Must call `Arc::new`
+  - Must call a `T` constructor in `Arc::new`
+  - Must call `.clone()` on those constructor args that have a cheaply clonable type (e.g. `Arc`, `Rc`)
+
 ### Error handling
 
 #### Principle
@@ -1967,6 +2043,7 @@ cfg_if::cfg_if! {
 
 ```shell
 origin
+repoconf-rust-private-lib-template
 ```
 
 ## Project files
@@ -2150,8 +2227,8 @@ if_missing = "error"
 env = "exec"
 
 [providers]
-keychain = { type = "keychain", service = "rust-private-lib-template" }
-pass = { type = "password-store", prefix = "rust-private-lib-template/" }
+keychain = { type = "keychain", service = "simplog" }
+pass = { type = "password-store", prefix = "simplog/" }
 age = { type = "age", recipients = [
     "age1sf4r4amev2svqr6llwg8hgtz9n7p5qdh7hh0mavcshzfrmgfduksnq3hql",
     "age1605gsnxpe536sprwccyumq74veg0g80u55n8ggems0t8deau6qdsfnq3m3"
@@ -2168,8 +2245,8 @@ resolver = "3"
 version = "0.1.0"
 edition = "2024"
 rust-version = "1.93.1"
-homepage = "https://github.com/DenisGorbachev/rust-private-lib-template"
-repository = "https://github.com/DenisGorbachev/rust-private-lib-template"
+homepage = "https://github.com/DenisGorbachev/simplog"
+repository = "https://github.com/DenisGorbachev/simplog"
 keywords = []
 categories = []
 exclude = [
@@ -2196,8 +2273,8 @@ exclude = [
 ]
 
 [workspace.metadata.details]
-name = "rust-private-lib-template"
-title = "Rust private template"
+name = "simplog"
+title = ""
 readme = { generate = false }
 
 [workspace.lints.rust]
@@ -2211,11 +2288,10 @@ absolute_paths = "deny"
 arithmetic_side_effects = "deny"
 
 [package]
-name = "rust-private-lib-template"
+name = "simplog"
 version.workspace = true
 edition.workspace = true
 rust-version.workspace = true
-description = "A template for creating Rust private repositories."
 homepage.workspace = true
 repository.workspace = true
 keywords.workspace = true
@@ -2223,7 +2299,7 @@ categories.workspace = true
 exclude.workspace = true
 
 [package.metadata.details]
-title = "Rust private template"
+title = ""
 
 [lints]
 workspace = true
@@ -2233,15 +2309,22 @@ derive-getters = { version = "0.5.0", features = ["auto_copy_getters"] }
 derive-new = "0.7.0"
 derive_more = { version = "2.1.1", features = ["full"] }
 errgonomic = { git = "https://github.com/DenisGorbachev/errgonomic" }
-itertools = "0.14.0"
+itertools = "0.15.0"
 standard-traits = { git = "https://github.com/DenisGorbachev/standard-traits" }
-strum = { version = "0.27.2", features = ["derive"] }
-stub-macro = { version = "0.2.1" }
+strum = { version = "0.28.0", features = ["derive"] }
+stub-macro = { version = "0.3.1" }
 subtype = { git = "https://github.com/DenisGorbachev/subtype" }
+git2 = "0.21.0"
+timestamp-please = { git = "https://github.com/DenisGorbachev/timestamp-please", features = ["serde", "time"] }
+interval-zoo = { git = "https://github.com/DenisGorbachev/interval-zoo" }
+url = "2.5.8"
+url-macro = "0.2.5"
 ```
 
 ### src/lib.rs
 
 ```rust
 //! This is a module-level comment for a Rust lib
+mod types;
+pub use types::*;
 ```
