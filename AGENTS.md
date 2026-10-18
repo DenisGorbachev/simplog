@@ -559,8 +559,9 @@ A package that has a remote whose name contains `public` or `pre-public` and end
 
 - Must have fields:
   - `commit: Arc<GithubCommit>`
-  - `path: RelativePathBuf`
-  - `line_range: IntervalStrictFiniteIncInc<u64>`
+  - `path: PathBuf`
+    - /// Caller must guarantee that `path` is non-empty, is relative to the repository root, contains no `..` components, and identifies a file in `commit`.
+  - `line_range: RangeInclusive<NonZeroU64>`
 
 ##### struct HtmlPageSource
 
