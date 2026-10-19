@@ -1,6 +1,6 @@
 ---
 name: simplog
-description: Write and review natural-language reasoning using simplog propositions and values.
+description: Natural-language reasoning
 ---
 
 # Simplog
@@ -32,7 +32,7 @@ Aliases: propset.
 
 - If you find an incorrect prop:
   - Add your own propset that includes a literal negation of the incorrect prop.
-- Check dependency chains for cycles, including across crates. Rust permits forward references and immutable reference cycles.
+- Check dependency chains for cycles, including across crates.
 - Don't check sources unless explicitly asked to.
 
 ### Write a reply to the user
