@@ -1,163 +1,101 @@
 # simplog repo spec
 
-- Every Rust source file:
-  - May have the following declarations:
-    - `use nu_path::RelativePathBuf;`
-    - `use interval_zoo::IntervalStrictFiniteIncInc;`
-    - `use derive_more::{Deref, AsRef}`
-
 ## package simplog
 
-- Every struct except [`Value`](#struct-value):
-  - Must have a corresponding `macro_rules!` that passes [Macro declaration of T requirements](#macro-declaration-of-t-requirements)
-- Every [envelope](#envelope-enum):
-  - For each variant:
-    - Must have a corresponding `macro_rules!` that passes [Macro declaration of enum E of variant V requirements](#macro-declaration-of-enum-e-of-variant-v-requirements)
-- Model values except [`Value`](#struct-value) must support direct construction in immutable static initializers.
-  - Constructors used by declaration macros must be `const fn`.
-- Types whose fields implement `Copy` must implement `Copy` and `Clone`.
-- Macros accepting `dependencies` must accept a list of proposition paths, e.g. `[P, Q]`, and pass a static slice of references, e.g. `&[&P, &Q]`, to the constructor.
+- Every struct except [`Value`](#struct-value) must have a [declaration macro](#macro-declaration-of-t-requirements).
+- Every [envelope](#envelope-enum) variant must have a [declaration macro](#macro-declaration-of-enum-e-of-variant-v-requirements).
+- All specified macros must use `macro_rules!` and `#[macro_export]`.
+- Implement `Copy` and `Clone` whenever all fields are `Copy`.
+- Macros must accept proposition paths `[P, Q]` for `dependencies` and pass `&[&P, &Q]` to the constructor.
 
 ### struct GithubRepo
 
-- Must have fields:
-  - `owner: &'static str`
-  - `name: &'static str`
+- `owner: &'static str`
+- `name: &'static str`
 
 ### struct GithubCommit
 
-- Must have fields:
-  - `repo: &'static GithubRepo`
-  - `oid: &'static str`
+- `repo: &'static GithubRepo`
+- `oid: &'static str`
 
 ### struct GithubSource
 
-- Must have fields:
-  - `commit: &'static GithubCommit`
-  - `path: &'static str`
-    - /// Caller must guarantee that `path` is non-empty, is relative to the repository root, contains no `..` components, and identifies a file in `commit`.
-  - `line_range: (usize, usize)`
-    - /// Inclusive, one-based line bounds. Caller must guarantee `1 <= start <= end <= line_count` for the file in `commit`.
-- Its constructor must accept a tuple of endpoints and normalize their order.
+- `commit: &'static GithubCommit`
+- `path: &'static str`
+  - /// Caller guarantees a nonempty repository-relative path without `..` components, identifying a file in `commit`.
+- `line_range: (usize, usize)`
+  - /// Inclusive, one-based bounds. Caller guarantees `1 <= start <= end <= line_count` for the file in `commit`.
+- Constructor: accept a tuple of endpoints and normalize their order.
 
 ### struct HtmlPageSource
 
-- Must have fields:
-  - `url: &'static str`
+- `url: &'static str`
 
 ### enum Source
 
-- Must have variants:
-  - `Github(GithubSource)`
-  - `HtmlPage(HtmlPageSource)`
+- `Github(GithubSource)`
+- `HtmlPage(HtmlPageSource)`
 
 ### struct AxiomProp
 
-- Must have fields:
-  - `content: &'static str`
-  - `source: Option<Source>` (optional)
+- `content: &'static str`
+- `source: Option<Source>` (optional)
 
 ### struct TheoremProp
 
-- Must have fields:
-  - `content: &'static str`
-  - `dependencies: &'static [&'static Prop]`
+- `content: &'static str`
+- `dependencies: &'static [&'static Prop]`
 
 ### enum Prop
 
-- Must have variants:
-  - `Axiom(AxiomProp)`
-  - `Theorem(TheoremProp)`
+- `Axiom(AxiomProp)`
+- `Theorem(TheoremProp)`
 
 ### struct Value
 
-- Must have generics:
-  - `T`
-- Must have derives:
-  - `Deref`
-  - `AsRef`
-- Must have fields:
-  - `inner: T`
-  - `dependencies: &'static [&'static Prop]`
-- Must have a corresponding `macro_rules!` that passes [Macro constructor of T requirements](#macro-constructor-of-t-requirements).
+- Generic: `T`.
+- Derives: `Deref`, `AsRef`.
+- `inner: T`
+- `dependencies: &'static [&'static Prop]`
+- Must have a [constructor macro](#macro-constructor-of-t-requirements).
 
 ### Macro declaration of T requirements
 
-- Must have `#[macro_export]`.
-- Must have a name equal to `{snake_case(T)}`.
-- Must accept the declaration identifier followed by constructor arguments in field order.
-  - For generic types, must also accept their generic arguments.
-- Must have one arm per prefix of fields that includes all required fields.
-- Every arm:
-  - Must emit a complete `pub static NAME: T = ...;` declaration, including the concrete type and its generic arguments.
-  - Must initialize the static by calling a const constructor of T.
-  - Must use const expressions for omitted fields' default values, e.g. `None` and `&[]`.
-  - Must evaluate each supplied argument expression exactly once.
-  - Must use `$crate` paths for simplog items.
-- Examples:
-  - `github_repo!(REPO, "owner", "name");`
-  - `github_commit!(COMMIT, &REPO, "0123456789abcdef0123456789abcdef01234567");`
-  - `github_source!(FILE, &COMMIT, "src/lib.rs", (10, 20));`
+- Name: `{snake_case(T)}`.
+- Arguments: declaration identifier followed by fields in order; also accept generic arguments when needed.
+- One arm per field prefix containing all required fields.
+- Emit `pub static NAME: T = ...;`, including generic arguments, by calling a `const fn` constructor.
+- Use const defaults for omitted fields and `$crate` paths for simplog items; evaluate each supplied argument once.
 
 ### Macro declaration of enum E of variant V requirements
 
-- Must have `#[macro_export]`.
-- Must have a name equal to `{snake_case(E)}_{snake_case(V)}`, except for `Prop`, whose macros must be named `{snake_case(V)}`.
-- Must accept the declaration identifier followed by the inner type's constructor arguments.
-- Must support the same optional-field prefixes as the inner type's declaration macro.
-- Every arm:
-  - Must emit a complete `pub static NAME: E = E::V(...);` declaration, including the concrete type.
-  - Must construct the variant's inner value using its const constructor.
-  - Must use const expressions for omitted fields' default values.
-  - Must evaluate each supplied argument expression exactly once.
-  - Must use `$crate` paths for simplog items.
-- Examples:
-  - `source_html_page!(PAGE, "https://example.com");`
-  - `axiom!(PREMISE, "P", Some(PAGE));`
-  - `axiom!(ASSUMPTION, "Q");`
-  - `theorem!(CONCLUSION, "P or Q", [PREMISE]);`
+Follow [T declaration requirements](#macro-declaration-of-t-requirements), except:
+
+- Name: `{snake_case(E)}_{snake_case(V)}`, or `{snake_case(V)}` for `Prop`.
+- Use the inner type's constructor arguments and prefix arms.
+- Emit `pub static NAME: E = E::V(...);` using the inner type's const constructor.
 
 ### Macro constructor of T requirements
 
-- Must have `#[macro_export]`
-- Must have a name equal to `{snake_case(T)}`
-- Must contain one arm per combination of [prefix list] of fields of T which contains at least all required fields
-  - For example:
-    - If a struct contains fields `a`, `b`, `c` (optional), `d` (optional), then its macro constructor must contain three arms:
-      - One arm for fields: `a`, `b`
-      - One arm for fields: `a`, `b`, `c`
-      - One arm for fields: `a`, `b`, `c`, `d`
-- Every arm:
-  - Must call a `T` constructor
-  - Must call `.clone()` on those constructor args that have a concrete non-generic type that is cheaply clonable (e.g. `Arc`, `Rc`)
+- Name: `{snake_case(T)}`.
+- One arm per field prefix containing all required fields.
+- Call a `T` constructor, using `.clone()` for concrete, non-generic arguments that are cheaply clonable (e.g. `Arc`, `Rc`).
 
 ### Macro constructor of Arc of T requirements
 
-- Must have `#[macro_export]`
-- Must have a name equal to `arc_{snake_case(T)}`
-- Must have the same arms as the corresponding [macro constructor of T](#macro-constructor-of-t-requirements)
-- Every arm:
-  - Must call `Arc::new`
-  - Must call a [macro constructor of T](#macro-constructor-of-t-requirements)
+- Name: `arc_{snake_case(T)}`.
+- Match the [T constructor macro](#macro-constructor-of-t-requirements) arms and wrap its call in `Arc::new`.
 
 ### Macro constructor of enum E of variant V requirements
 
-- Must have `#[macro_export]`
-- Must have a name equal to `{snake_case(E)}_{snake_case(V)}`
-- Must have the same arms as the corresponding [macro constructor of T](#macro-constructor-of-t-requirements)
-- Every arm:
-  - Must call `E::V`
-  - Must call a [macro constructor of T](#macro-constructor-of-t-requirements) (where `T` is the inner type of variant `V`)
+- Name: `{snake_case(E)}_{snake_case(V)}`.
+- Match the [T constructor macro](#macro-constructor-of-t-requirements) arms and wrap its call in `E::V`, where `T` is the variant's inner type.
 
 ### Macro constructor of Arc of enum E of variant V requirements
 
-- Must have `#[macro_export]`
-- Must have a name equal to `arc_{snake_case(E)}_{snake_case(V)}`
-- Must have the same arms as the corresponding [Macro constructor of enum E of variant V requirements](#macro-constructor-of-enum-e-of-variant-v-requirements)
-- Every arm:
-  - Must call `Arc::new`
-  - Must call a [Macro constructor of enum E of variant V requirements](#macro-constructor-of-enum-e-of-variant-v-requirements)
+- Name: `arc_{snake_case(E)}_{snake_case(V)}`.
+- Match the [variant constructor macro](#macro-constructor-of-enum-e-of-variant-v-requirements) arms and wrap its call in `Arc::new`.
 
 ### Envelope enum
 
-A enum whose every variant is a tuple with exactly one inner type.
+An enum whose variants each contain exactly one tuple field.
