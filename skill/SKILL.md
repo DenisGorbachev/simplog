@@ -1,3 +1,8 @@
+---
+name: simplog
+description: Write and review natural-language reasoning using simplog propositions and values.
+---
+
 # Simplog
 
 The `simplog` crate provides types for structured reasoning in natural language.
@@ -27,7 +32,7 @@ Aliases: propset.
 
 - If you find an incorrect prop:
   - Add your own propset that includes a literal negation of the incorrect prop.
-- Ensure there are no circular references.
+- Check dependency chains for cycles, including across crates. Rust permits forward references and immutable reference cycles.
 - Don't check sources unless explicitly asked to.
 
 ### Write a reply to the user

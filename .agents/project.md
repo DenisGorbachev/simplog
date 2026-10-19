@@ -8,14 +8,14 @@
 
 ## package simplog
 
-- Every struct:
+- Every struct except [`Value`](#struct-value):
   - Must have a corresponding `macro_rules!` that passes [Macro declaration of T requirements](#macro-declaration-of-t-requirements)
 - Every [envelope](#envelope-enum):
   - For each variant:
     - Must have a corresponding `macro_rules!` that passes [Macro declaration of enum E of variant V requirements](#macro-declaration-of-enum-e-of-variant-v-requirements)
-- Model values must support direct construction in immutable static initializers.
+- Model values except [`Value`](#struct-value) must support direct construction in immutable static initializers.
   - Constructors used by declaration macros must be `const fn`.
-  - Types whose fields implement `Copy` must implement `Copy` and `Clone`.
+- Types whose fields implement `Copy` must implement `Copy` and `Clone`.
 
 ### struct GithubRepo
 
@@ -70,6 +70,7 @@
 
 ### struct Value
 
+- Must support runtime construction without requiring `T: Copy`, `T: Sync`, or `T: 'static`.
 - Must have generics:
   - `T`
 - Must have derives:
@@ -78,13 +79,14 @@
 - Must have fields:
   - `inner: T`
   - `dependencies: &'static [&'static Prop]`
+- Must have an exported expression macro `value!(inner, dependencies)` that expands to `$crate::Value::new(inner, dependencies)`, evaluating each argument once.
 
 ### Macro declaration of T requirements
 
 - Must have `#[macro_export]`.
 - Must have a name equal to `{snake_case(T)}`.
 - Must accept the declaration identifier followed by constructor arguments in field order.
-  - For generic types, must also accept their generic arguments, e.g. `value!(COUNT: usize, 3)`.
+  - For generic types, must also accept their generic arguments.
 - Must have one arm per prefix of fields that includes all required fields.
 - Every arm:
   - Must emit a complete `pub static NAME: T = ...;` declaration, including the concrete type and its generic arguments.
@@ -96,7 +98,6 @@
   - `github_repo!(REPO, "owner", "name");`
   - `github_commit!(COMMIT, &REPO, "0123456789abcdef0123456789abcdef01234567");`
   - `github_source!(FILE, &COMMIT, "src/lib.rs", (10, 20));`
-  - `value!(COUNT: usize, 3);`
 
 ### Macro declaration of enum E of variant V requirements
 
@@ -115,51 +116,6 @@
   - `axiom!(PREMISE, "P", Some(PAGE));`
   - `axiom!(ASSUMPTION, "Q");`
   - `theorem!(CONCLUSION, "P or Q", &[&PREMISE]);`
-
-### Legacy macro constructors
-
-Reference only; implementations are not required, and these rules do not apply to declaration macros.
-
-### Macro constructor of T requirements
-
-- Must have `#[macro_export]`
-- Must have a name equal to `{snake_case(T)}`
-- Must contain one arm per combination of [prefix list] of fields of T which contains at least all required fields
-  - For example:
-    - If a struct contains fields `a`, `b`, `c` (optional), `d` (optional), then its macro constructor must contain three arms:
-      - One arm for fields: `a`, `b`
-      - One arm for fields: `a`, `b`, `c`
-      - One arm for fields: `a`, `b`, `c`, `d`
-- Every arm:
-  - Must call a `T` constructor
-  - Must call `.clone()` on those constructor args that have a concrete non-generic type that is cheaply clonable (e.g. `Arc`, `Rc`)
-
-### Macro constructor of Arc of T requirements
-
-- Must have `#[macro_export]`
-- Must have a name equal to `arc_{snake_case(T)}`
-- Must have the same arms as the corresponding [macro constructor of T](#macro-constructor-of-t-requirements)
-- Every arm:
-  - Must call `Arc::new`
-  - Must call a [macro constructor of T](#macro-constructor-of-t-requirements)
-
-### Macro constructor of enum E of variant V requirements
-
-- Must have `#[macro_export]`
-- Must have a name equal to `{snake_case(E)}_{snake_case(V)}`
-- Must have the same arms as the corresponding [macro constructor of T](#macro-constructor-of-t-requirements)
-- Every arm:
-  - Must call `E::V`
-  - Must call a [macro constructor of T](#macro-constructor-of-t-requirements) (where `T` is the inner type of variant `V`)
-
-### Macro constructor of Arc of enum E of variant V requirements
-
-- Must have `#[macro_export]`
-- Must have a name equal to `arc_{snake_case(E)}_{snake_case(V)}`
-- Must have the same arms as the corresponding [Macro constructor of enum E of variant V requirements](#macro-constructor-of-enum-e-of-variant-v-requirements)
-- Every arm:
-  - Must call `Arc::new`
-  - Must call a [Macro constructor of enum E of variant V requirements](#macro-constructor-of-enum-e-of-variant-v-requirements)
 
 ### Envelope enum
 
