@@ -584,7 +584,7 @@ A package that has a remote whose name contains `public` or `pre-public` and end
 
 - Must have fields:
   - `content: String`
-  - `dependencies: Vec<Arc<Prop>>`
+  - `dependencies: Vec<Arc<Prop>>` (optional)
 
 ##### enum Prop
 
@@ -598,12 +598,18 @@ A package that has a remote whose name contains `public` or `pre-public` and end
   - `T`
 - Must have fields:
   - `inner: T`
-  - `dependencies: Vec<Arc<Prop>>`
+  - `dependencies: Vec<Arc<Prop>>` (optional)
 
 ##### Macro constructor of T requirements
 
 - Must have `#[macro_export]`
 - Must have a name equal to `{snake_case(T)}`
+- Must contain one arm per combination of [prefix list] of fields of T which contains at least all required fields
+  - For example:
+    - If a struct contains fields `a`, `b`, `c` (optional), `d` (optional), then its macro constructor must contain three arms:
+      - One arm for fields: `a`, `b`
+      - One arm for fields: `a`, `b`, `c`
+      - One arm for fields: `a`, `b`, `c`, `d`
 - Every arm:
   - Must call a `T` constructor
   - Must call `.clone()` on those constructor args that have a concrete non-generic type that is cheaply clonable (e.g. `Arc`, `Rc`)
@@ -612,6 +618,7 @@ A package that has a remote whose name contains `public` or `pre-public` and end
 
 - Must have `#[macro_export]`
 - Must have a name equal to `arc_{snake_case(T)}`
+- Must have the same arms as the corresponding [macro constructor of T](#macro-constructor-of-t-requirements)
 - Every arm:
   - Must call `Arc::new`
   - Must call a [macro constructor of T](#macro-constructor-of-t-requirements)
@@ -620,6 +627,7 @@ A package that has a remote whose name contains `public` or `pre-public` and end
 
 - Must have `#[macro_export]`
 - Must have a name equal to `{snake_case(E)}_{snake_case(V)}`
+- Must have the same arms as the corresponding [macro constructor of T](#macro-constructor-of-t-requirements)
 - Every arm:
   - Must call `E::V`
   - Must call a [macro constructor of T](#macro-constructor-of-t-requirements) (where `T` is the inner type of variant `V`)
@@ -628,6 +636,7 @@ A package that has a remote whose name contains `public` or `pre-public` and end
 
 - Must have `#[macro_export]`
 - Must have a name equal to `arc_{snake_case(E)}_{snake_case(V)}`
+- Must have the same arms as the corresponding [Macro constructor of enum E of variant V requirements](#macro-constructor-of-enum-e-of-variant-v-requirements)
 - Every arm:
   - Must call `Arc::new`
   - Must call a [Macro constructor of enum E of variant V requirements](#macro-constructor-of-enum-e-of-variant-v-requirements)
