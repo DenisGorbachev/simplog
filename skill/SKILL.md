@@ -25,9 +25,10 @@ Aliases: propset.
 
 ### Review reasoning
 
-- Don't check sources unless explicitly asked to.
 - If you find an incorrect prop:
   - Add your own propset that includes a literal negation of the incorrect prop.
+- Ensure there are no circular references.
+- Don't check sources unless explicitly asked to.
 
 ### Write a reply to the user
 
