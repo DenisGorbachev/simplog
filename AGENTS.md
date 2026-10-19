@@ -533,6 +533,7 @@ A package that has a remote whose name contains `public` or `pre-public` and end
   - May have the following declarations:
     - `use nu_path::RelativePathBuf;`
     - `use interval_zoo::IntervalStrictFiniteIncInc;`
+    - `use derive_more::{Deref, AsRef}`
 
 #### package simplog
 
@@ -588,7 +589,7 @@ A package that has a remote whose name contains `public` or `pre-public` and end
 
 - Must have fields:
   - `content: &'static str`
-  - `dependencies: &'static [&'static Prop]` (optional)
+  - `dependencies: &'static [&'static Prop]`
 
 ##### enum Prop
 
@@ -600,9 +601,12 @@ A package that has a remote whose name contains `public` or `pre-public` and end
 
 - Must have generics:
   - `T`
+- Must have derives:
+  - `Deref`
+  - `AsRef`
 - Must have fields:
   - `inner: T`
-  - `dependencies: &'static [&'static Prop]` (optional)
+  - `dependencies: &'static [&'static Prop]`
 
 ##### Macro declaration of T requirements
 
