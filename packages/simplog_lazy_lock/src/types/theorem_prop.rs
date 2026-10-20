@@ -5,6 +5,6 @@ use std::sync::LazyLock;
 #[derive(new, Clone, Debug)]
 pub struct TheoremProp {
     #[new(into)]
-    pub content: String,
+    pub statement: String,
     pub dependencies: &'static [&'static LazyLock<Prop>],
 }

@@ -593,13 +593,13 @@ A package that has a remote whose name contains `public` or `pre-public` and end
 ##### struct AxiomProp
 
 - Must have fields:
-  - `content: &'static str`
+  - `statement: &'static str`
   - `source: Option<Source>` (optional)
 
 ##### struct TheoremProp
 
 - Must have fields:
-  - `content: &'static str`
+  - `statement: &'static str`
   - `dependencies: &'static [&'static Prop]`
 
 ##### enum Prop

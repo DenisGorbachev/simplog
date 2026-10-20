@@ -2,7 +2,7 @@
 
 Natural-language reasoning with `LazyLock` declarations.
 
-`axiom!` and `theorem!` declare public `LazyLock<Prop>` statics. Their content accepts `impl Into<String>`, including expressions evaluated on first access. Dependency lists such as `[p, q]` store references to lazy propositions without forcing them. Dependency chains must be acyclic.
+`axiom!` and `theorem!` declare public `LazyLock<Prop>` statics. Their statement argument accepts `impl Into<String>`, including expressions evaluated on first access. Dependency lists such as `[p, q]` store references to lazy propositions without forcing them. Dependency chains must be acyclic.
 
 Construct a decision with `Value::new(inner, const { &[&p, &q] })`. The inner value can be constructed at runtime, including from local borrows. `Value<T>` implements `Deref<Target = T>` and `AsRef<T>`.
 

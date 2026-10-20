@@ -9,17 +9,17 @@ pub enum Prop {
 
 #[macro_export]
 macro_rules! axiom {
-    ($name:ident, $content:expr, $source:expr) => {
-        $crate::lazy_lock!($name, $crate::Prop, $crate::Prop::Axiom($crate::AxiomProp::new($content, $source)));
+    ($name:ident, $statement:expr, $source:expr) => {
+        $crate::lazy_lock!($name, $crate::Prop, $crate::Prop::Axiom($crate::AxiomProp::new($statement, $source)));
     };
-    ($name:ident, $content:expr) => {
-        $crate::axiom!($name, $content, ::core::option::Option::None);
+    ($name:ident, $statement:expr) => {
+        $crate::axiom!($name, $statement, ::core::option::Option::None);
     };
 }
 
 #[macro_export]
 macro_rules! theorem {
-    ($name:ident, $content:expr, [$($dependency:path),* $(,)?]) => {
-        $crate::lazy_lock!($name, $crate::Prop, $crate::Prop::Theorem($crate::TheoremProp::new($content, const { &[$(&$dependency),*] })));
+    ($name:ident, $statement:expr, [$($dependency:path),* $(,)?]) => {
+        $crate::lazy_lock!($name, $crate::Prop, $crate::Prop::Theorem($crate::TheoremProp::new($statement, const { &[$(&$dependency),*] })));
     };
 }
