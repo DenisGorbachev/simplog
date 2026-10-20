@@ -1,10 +1,7 @@
-use simplog_lazy_lock::{Value, axiom, theorem, value};
+#![allow(non_upper_case_globals)]
 
-axiom!(ALL_HUMANS_ARE_MORTAL, "All humans are mortal.");
-axiom!(SOCRATES_IS_HUMAN, "Socrates is human.");
-theorem!(SOCRATES_IS_MORTAL, "Socrates is mortal.", [ALL_HUMANS_ARE_MORTAL, SOCRATES_IS_HUMAN]);
+use simplog_lazy_lock::{axiom, theorem};
 
-fn main() {
-    let is_mortal: Value<bool> = value!(true, [SOCRATES_IS_MORTAL]);
-    println!("Socrates is mortal: {}", *is_mortal);
-}
+axiom!(all_humans_are_mortal, "All humans are mortal");
+axiom!(socrates_is_human, "Socrates is human");
+theorem!(socrates_is_mortal, "Socrates is mortal", [all_humans_are_mortal, socrates_is_human]);

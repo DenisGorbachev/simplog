@@ -535,20 +535,23 @@ A package that has a remote whose name contains `public` or `pre-public` and end
 
 #### package simplog
 
-- Every struct except [`Value`](#struct-value):
+- Every struct except [`Value`](#struct-value) and envelope payload types:
   - Must have a [declaration macro](#macro-declaration-of-t-requirements).
+- Every envelope payload type:
+  - Must not have a standalone declaration macro.
 - Every [envelope](#envelope-enum):
   - Every variant:
     - Must have a [declaration macro](#macro-declaration-of-enum-e-of-variant-v-requirements).
 - Every specified macro:
   - Must use `macro_rules!`.
   - Must have `#[macro_export]`.
+  - Must accept optional trailing commas only in variadic argument lists.
 - Every type whose fields implement `Copy`:
   - Must implement `Copy`.
   - Must implement `Clone`.
 - Every macro accepting `dependencies`:
-  - Must accept a list of proposition paths, e.g. `[P, Q]`.
-  - Must pass a static slice of references, e.g. `&[&P, &Q]`, to the constructor.
+  - Must accept a list of proposition paths, e.g. `[p, q]`.
+  - Must store a static slice of references, e.g. `&[&p, &q]`.
 
 ##### struct GithubRepo
 
@@ -570,7 +573,7 @@ A package that has a remote whose name contains `public` or `pre-public` and end
     - /// Caller guarantees a nonempty repository-relative path without `..` components, identifying a file in `commit`.
   - `line_range: (usize, usize)`
     - /// Inclusive, one-based bounds. Caller guarantees `1 <= start <= end <= line_count` for the file in `commit`.
-- Its constructor:
+- The `source_github!` macro:
   - Must accept a tuple of endpoints.
   - Must normalize their order.
 
@@ -613,19 +616,19 @@ A package that has a remote whose name contains `public` or `pre-public` and end
 - Must have fields:
   - `inner: T`
   - `dependencies: &'static [&'static Prop]`
-- Must have a [constructor macro](#macro-constructor-of-t-requirements).
+- Must not have a constructor macro.
 
 ##### Macro declaration of T requirements
 
 - Must be named `{snake_case(T)}`.
-- Must accept the declaration identifier before constructor arguments.
-- Must accept constructor arguments in field order.
+- Must accept the declaration identifier before field values.
+- Must accept field values in field order.
 - Must accept generic arguments for generic types.
 - Must have one arm for every argument list obtained by omitting zero or more trailing optional fields.
 - Every arm:
-  - Must emit a complete `pub static NAME: T = ...;` declaration.
+  - Must emit a complete `pub static name: T = ...;` declaration.
   - Must include the type's generic arguments.
-  - Must initialize the static by calling a `const fn` constructor.
+  - Must initialize the static with a struct literal.
   - Must use const defaults for omitted fields.
   - Must use `$crate` paths for simplog items.
   - Must evaluate each supplied argument once.
@@ -635,11 +638,11 @@ A package that has a remote whose name contains `public` or `pre-public` and end
 - Must follow [T declaration requirements](#macro-declaration-of-t-requirements), except as specified below.
 - Must be named `{snake_case(E)}_{snake_case(V)}` when `E` is not `Prop`.
 - Must be named `{snake_case(V)}` when `E` is `Prop`.
-- Must accept the inner type's constructor arguments.
+- Must accept the inner type's field values.
 - Must support the inner type's optional argument lists.
 - Every arm:
-  - Must emit `pub static NAME: E = E::V(...);`.
-  - Must construct the inner value using its const constructor.
+  - Must emit `pub static name: E = E::V(...);`.
+  - Must construct the inner value with a struct literal.
 
 ##### Macro constructor of T requirements
 
@@ -676,6 +679,24 @@ A package that has a remote whose name contains `public` or `pre-public` and end
 ##### Envelope enum
 
 An enum whose variants each contain exactly one tuple field.
+
+#### package simplog_lazy_lock
+
+- Must follow the `simplog` requirements with the following changes.
+- Every declaration macro:
+  - Must declare a `LazyLock<T>` static.
+  - Must construct the value inside its initializer.
+- Every string field except `GithubCommit::oid`:
+  - Must use an owned type: `String` for text, `PathBuf` for paths, `Url` for URLs.
+- Every reference to `GithubRepo`, `GithubCommit`, or `Prop`:
+  - Must reference `LazyLock<T>`.
+- `GithubCommit::oid`:
+  - Must use `GitOid`, an alias for `git2::Oid`.
+- The `github_commit!` and `source_github!` macros:
+  - Must accept the referenced declaration's path without `&`.
+- The `source_html_page!` macro:
+  - Must accept the string-literal argument accepted by `url_macro::url!`.
+  - Must construct the URL with `url_macro::url!`.
 
 ### Error handling
 
@@ -2357,6 +2378,16 @@ derive-new = "0.7.0"
 derive_more = { version = "2.1.1", features = ["full"] }
 git2 = "0.21.0"
 url = "2.5.8"
+derive-getters = { version = "0.5.0", features = ["auto_copy_getters"] }
+errgonomic = { git = "https://github.com/DenisGorbachev/errgonomic" }
+itertools = "0.15.0"
+standard-traits = { git = "https://github.com/DenisGorbachev/standard-traits" }
+strum = { version = "0.28.0", features = ["derive"] }
+stub-macro = { version = "0.3.1" }
+subtype = { git = "https://github.com/DenisGorbachev/subtype" }
+timestamp-please = { git = "https://github.com/DenisGorbachev/timestamp-please", features = ["serde", "time"] }
+interval-zoo = { git = "https://github.com/DenisGorbachev/interval-zoo" }
+url-macro = "0.2.5"
 
 [workspace.lints.rust]
 redundant_imports = "deny"
@@ -2370,6 +2401,7 @@ arithmetic_side_effects = "deny"
 
 [package]
 name = "simplog"
+autoexamples = false
 version.workspace = true
 edition.workspace = true
 rust-version.workspace = true
@@ -2386,20 +2418,38 @@ title = ""
 workspace = true
 
 [dependencies]
-derive-getters = { version = "0.5.0", features = ["auto_copy_getters"] }
+derive-getters.workspace = true
 derive-new.workspace = true
 derive_more.workspace = true
-errgonomic = { git = "https://github.com/DenisGorbachev/errgonomic" }
-itertools = "0.15.0"
-standard-traits = { git = "https://github.com/DenisGorbachev/standard-traits" }
-strum = { version = "0.28.0", features = ["derive"] }
-stub-macro = { version = "0.3.1" }
-subtype = { git = "https://github.com/DenisGorbachev/subtype" }
+errgonomic.workspace = true
+itertools.workspace = true
+standard-traits.workspace = true
+strum.workspace = true
+stub-macro.workspace = true
+subtype.workspace = true
 git2.workspace = true
-timestamp-please = { git = "https://github.com/DenisGorbachev/timestamp-please", features = ["serde", "time"] }
-interval-zoo = { git = "https://github.com/DenisGorbachev/interval-zoo" }
+timestamp-please.workspace = true
+interval-zoo.workspace = true
 url.workspace = true
-url-macro = "0.2.5"
+url-macro.workspace = true
+
+[[example]]
+name = "socrates"
+path = "examples/socrates.rs"
+crate-type = ["lib"]
+
+[[example]]
+name = "two_plus_two"
+path = "examples/two_plus_two.rs"
+crate-type = ["lib"]
+
+[[example]]
+name = "ll_vs_dc"
+path = "examples/ll_vs_dc.rs"
+
+[[example]]
+name = "package_name"
+path = "examples/package_name.rs"
 ```
 
 ### packages/simplog_lazy_lock/Cargo.toml
@@ -2426,14 +2476,17 @@ derive-new.workspace = true
 derive_more.workspace = true
 git2.workspace = true
 url.workspace = true
+url-macro.workspace = true
 
 [[example]]
 name = "socrates_lazy_lock"
 path = "examples/socrates.rs"
+crate-type = ["lib"]
 
 [[example]]
 name = "two_plus_two_lazy_lock"
 path = "examples/two_plus_two.rs"
+crate-type = ["lib"]
 
 [[example]]
 name = "ll_vs_dc_lazy_lock"
@@ -2447,15 +2500,14 @@ mod macros;
 
 mod types;
 pub use types::*;
+#[doc(hidden)]
+pub use url_macro::url as __url;
 ```
 
 ### src/lib.rs
 
 ```rust
 //! Types for structured logical inference.
-
-mod macros;
-pub(crate) use macros::*;
 
 mod types;
 pub use types::*;

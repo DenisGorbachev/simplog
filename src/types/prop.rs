@@ -10,16 +10,19 @@ pub enum Prop {
 #[macro_export]
 macro_rules! axiom {
     ($name:ident, $content:expr, $source:expr) => {
-        pub static $name: $crate::Prop = $crate::Prop::Axiom($crate::AxiomProp::new($content, $source));
+        pub static $name: $crate::Prop = $crate::Prop::Axiom($crate::AxiomProp {
+            content: $content,
+            source: $source,
+        });
     };
     ($name:ident, $content:expr) => {
-        pub static $name: $crate::Prop = $crate::Prop::Axiom($crate::AxiomProp::new($content, ::core::option::Option::None));
+        $crate::axiom!($name, $content, ::core::option::Option::None);
     };
 }
 
 #[macro_export]
 macro_rules! theorem {
-    ($name:ident, $content:expr, [$($dependency:path),* $(,)?] $(,)?) => {
-        pub static $name: $crate::Prop = $crate::Prop::Theorem($crate::TheoremProp::new($content, &[$(&$dependency),*]));
+    ($name:ident, $content:expr, [$($dependency:path),* $(,)?]) => {
+        pub static $name: $crate::Prop = $crate::Prop::Theorem($crate::TheoremProp { content: $content, dependencies: &[$(&$dependency),*] });
     };
 }

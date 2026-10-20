@@ -601,6 +601,7 @@ dependencies = [
  "derive_more 2.1.1",
  "git2",
  "url",
+ "url-macro",
 ]
 
 [[package]]

@@ -21,6 +21,12 @@ A set of [propositions](#proposition).
 
 Aliases: propset.
 
+## Writing propositions
+
+- Use lowercase `snake_case` identifiers for statics.
+- Add `#![allow(non_upper_case_globals)]` at the module level containing those statics.
+- A single-line `content` value must not end with a period.
+
 ## Workflows
 
 ### Decide on a value of type T

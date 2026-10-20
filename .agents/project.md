@@ -6,20 +6,23 @@
 
 ## package simplog
 
-- Every struct except [`Value`](#struct-value):
+- Every struct except [`Value`](#struct-value) and envelope payload types:
   - Must have a [declaration macro](#macro-declaration-of-t-requirements).
+- Every envelope payload type:
+  - Must not have a standalone declaration macro.
 - Every [envelope](#envelope-enum):
   - Every variant:
     - Must have a [declaration macro](#macro-declaration-of-enum-e-of-variant-v-requirements).
 - Every specified macro:
   - Must use `macro_rules!`.
   - Must have `#[macro_export]`.
+  - Must accept optional trailing commas only in variadic argument lists.
 - Every type whose fields implement `Copy`:
   - Must implement `Copy`.
   - Must implement `Clone`.
 - Every macro accepting `dependencies`:
-  - Must accept a list of proposition paths, e.g. `[P, Q]`.
-  - Must pass a static slice of references, e.g. `&[&P, &Q]`, to the constructor.
+  - Must accept a list of proposition paths, e.g. `[p, q]`.
+  - Must store a static slice of references, e.g. `&[&p, &q]`.
 
 ### struct GithubRepo
 
@@ -41,7 +44,7 @@
     - /// Caller guarantees a nonempty repository-relative path without `..` components, identifying a file in `commit`.
   - `line_range: (usize, usize)`
     - /// Inclusive, one-based bounds. Caller guarantees `1 <= start <= end <= line_count` for the file in `commit`.
-- Its constructor:
+- The `source_github!` macro:
   - Must accept a tuple of endpoints.
   - Must normalize their order.
 
@@ -84,19 +87,19 @@
 - Must have fields:
   - `inner: T`
   - `dependencies: &'static [&'static Prop]`
-- Must have a [constructor macro](#macro-constructor-of-t-requirements).
+- Must not have a constructor macro.
 
 ### Macro declaration of T requirements
 
 - Must be named `{snake_case(T)}`.
-- Must accept the declaration identifier before constructor arguments.
-- Must accept constructor arguments in field order.
+- Must accept the declaration identifier before field values.
+- Must accept field values in field order.
 - Must accept generic arguments for generic types.
 - Must have one arm for every argument list obtained by omitting zero or more trailing optional fields.
 - Every arm:
-  - Must emit a complete `pub static NAME: T = ...;` declaration.
+  - Must emit a complete `pub static name: T = ...;` declaration.
   - Must include the type's generic arguments.
-  - Must initialize the static by calling a `const fn` constructor.
+  - Must initialize the static with a struct literal.
   - Must use const defaults for omitted fields.
   - Must use `$crate` paths for simplog items.
   - Must evaluate each supplied argument once.
@@ -106,11 +109,11 @@
 - Must follow [T declaration requirements](#macro-declaration-of-t-requirements), except as specified below.
 - Must be named `{snake_case(E)}_{snake_case(V)}` when `E` is not `Prop`.
 - Must be named `{snake_case(V)}` when `E` is `Prop`.
-- Must accept the inner type's constructor arguments.
+- Must accept the inner type's field values.
 - Must support the inner type's optional argument lists.
 - Every arm:
-  - Must emit `pub static NAME: E = E::V(...);`.
-  - Must construct the inner value using its const constructor.
+  - Must emit `pub static name: E = E::V(...);`.
+  - Must construct the inner value with a struct literal.
 
 ### Macro constructor of T requirements
 
@@ -147,3 +150,21 @@
 ### Envelope enum
 
 An enum whose variants each contain exactly one tuple field.
+
+## package simplog_lazy_lock
+
+- Must follow the `simplog` requirements with the following changes.
+- Every declaration macro:
+  - Must declare a `LazyLock<T>` static.
+  - Must construct the value inside its initializer.
+- Every string field except `GithubCommit::oid`:
+  - Must use an owned type: `String` for text, `PathBuf` for paths, `Url` for URLs.
+- Every reference to `GithubRepo`, `GithubCommit`, or `Prop`:
+  - Must reference `LazyLock<T>`.
+- `GithubCommit::oid`:
+  - Must use `GitOid`, an alias for `git2::Oid`.
+- The `github_commit!` and `source_github!` macros:
+  - Must accept the referenced declaration's path without `&`.
+- The `source_html_page!` macro:
+  - Must accept the string-literal argument accepted by `url_macro::url!`.
+  - Must construct the URL with `url_macro::url!`.

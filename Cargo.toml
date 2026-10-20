@@ -43,6 +43,16 @@ derive-new = "0.7.0"
 derive_more = { version = "2.1.1", features = ["full"] }
 git2 = "0.21.0"
 url = "2.5.8"
+derive-getters = { version = "0.5.0", features = ["auto_copy_getters"] }
+errgonomic = { git = "https://github.com/DenisGorbachev/errgonomic" }
+itertools = "0.15.0"
+standard-traits = { git = "https://github.com/DenisGorbachev/standard-traits" }
+strum = { version = "0.28.0", features = ["derive"] }
+stub-macro = { version = "0.3.1" }
+subtype = { git = "https://github.com/DenisGorbachev/subtype" }
+timestamp-please = { git = "https://github.com/DenisGorbachev/timestamp-please", features = ["serde", "time"] }
+interval-zoo = { git = "https://github.com/DenisGorbachev/interval-zoo" }
+url-macro = "0.2.5"
 
 [workspace.lints.rust]
 redundant_imports = "deny"
@@ -56,6 +66,7 @@ arithmetic_side_effects = "deny"
 
 [package]
 name = "simplog"
+autoexamples = false
 version.workspace = true
 edition.workspace = true
 rust-version.workspace = true
@@ -72,17 +83,35 @@ title = ""
 workspace = true
 
 [dependencies]
-derive-getters = { version = "0.5.0", features = ["auto_copy_getters"] }
+derive-getters.workspace = true
 derive-new.workspace = true
 derive_more.workspace = true
-errgonomic = { git = "https://github.com/DenisGorbachev/errgonomic" }
-itertools = "0.15.0"
-standard-traits = { git = "https://github.com/DenisGorbachev/standard-traits" }
-strum = { version = "0.28.0", features = ["derive"] }
-stub-macro = { version = "0.3.1" }
-subtype = { git = "https://github.com/DenisGorbachev/subtype" }
+errgonomic.workspace = true
+itertools.workspace = true
+standard-traits.workspace = true
+strum.workspace = true
+stub-macro.workspace = true
+subtype.workspace = true
 git2.workspace = true
-timestamp-please = { git = "https://github.com/DenisGorbachev/timestamp-please", features = ["serde", "time"] }
-interval-zoo = { git = "https://github.com/DenisGorbachev/interval-zoo" }
+timestamp-please.workspace = true
+interval-zoo.workspace = true
 url.workspace = true
-url-macro = "0.2.5"
+url-macro.workspace = true
+
+[[example]]
+name = "socrates"
+path = "examples/socrates.rs"
+crate-type = ["lib"]
+
+[[example]]
+name = "two_plus_two"
+path = "examples/two_plus_two.rs"
+crate-type = ["lib"]
+
+[[example]]
+name = "ll_vs_dc"
+path = "examples/ll_vs_dc.rs"
+
+[[example]]
+name = "package_name"
+path = "examples/package_name.rs"

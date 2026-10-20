@@ -1,24 +1,33 @@
-use simplog_lazy_lock::{Value, axiom, theorem, value};
+#![allow(non_upper_case_globals)]
 
-axiom!(FIXED_GRAPH, "This application knows its proposition texts, source identifiers, and dependency graph at compile time.");
-axiom!(REVIEWED_METADATA, "This application accepts caller-reviewed source metadata without runtime parsing.");
-axiom!(DC_CAPABILITIES, "Direct construction (DC) can represent fixed text, source identifiers, line bounds, and dependency edges using string literals, tuples, and static references.");
-axiom!(LL_CAPABILITIES, "LazyLock (LL) can initialize owned proposition text and typed source metadata at first access.");
-axiom!(CHOICE_RULE, "When LL and DC both meet the application's requirements, choose DC if runtime construction adds no required capability.");
+use simplog_lazy_lock::{Value, axiom, source_html_page, theorem};
+
+source_html_page!(lazy_lock_docs, "https://doc.rust-lang.org/std/sync/struct.LazyLock.html");
+
+axiom!(fixed_graph, "This application knows its proposition texts, source identifiers, and dependency graph at compile time");
+axiom!(reviewed_metadata, "This application accepts caller-reviewed source metadata without runtime parsing");
+axiom!(dc_capabilities, "Direct construction (DC) can represent fixed text, source identifiers, line bounds, and dependency edges using string literals, tuples, and static references");
+axiom!(ll_capabilities, "LazyLock (LL) can initialize owned proposition text and typed source metadata at first access", Some(lazy_lock_docs.clone()));
+axiom!(choice_rule, "When LL and DC both meet the application's requirements, choose DC if runtime construction adds no required capability");
+axiom!(ll_validation, "LazyLock (LL) supports runtime validation");
 
 theorem!(
-    BOTH_MODELS_FIT,
-    "Both LL and DC can represent this application's proposition graph.",
+    both_models_fit,
+    "Both LL and DC can represent this application's proposition graph",
     [
-        FIXED_GRAPH,
-        REVIEWED_METADATA,
-        DC_CAPABILITIES,
-        LL_CAPABILITIES
-    ],
+        fixed_graph,
+        reviewed_metadata,
+        dc_capabilities,
+        ll_capabilities
+    ]
 );
-theorem!(CHOOSE_DC, "Choose DC: all required proposition data is fixed, and runtime construction or validation is unnecessary.", [BOTH_MODELS_FIT, FIXED_GRAPH, REVIEWED_METADATA, CHOICE_RULE],);
+theorem!(choose_dc, "Choose DC: all required proposition data is fixed, and runtime construction or validation is unnecessary", [both_models_fit, fixed_graph, reviewed_metadata, choice_rule]);
 
 fn main() {
-    let use_lazy_lock: Value<bool> = value!(false, [CHOOSE_DC]);
-    println!("Decision: {}", if *use_lazy_lock { "LL" } else { "DC" });
+    let decision = Value::new(Construction::Direct, const { &[&choose_dc] });
+    println!("Decision: {:?}", *decision);
 }
+
+#[path = "ll_vs_dc/construction.rs"]
+mod construction;
+pub use construction::*;

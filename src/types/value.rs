@@ -9,10 +9,3 @@ pub struct Value<T> {
     pub inner: T,
     pub dependencies: &'static [&'static Prop],
 }
-
-#[macro_export]
-macro_rules! value {
-    ($inner:expr, [$($dependency:path),* $(,)?] $(,)?) => {
-        $crate::Value::new($inner, const { &[$(&$dependency),*] })
-    };
-}
