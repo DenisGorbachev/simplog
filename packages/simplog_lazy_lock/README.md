@@ -6,7 +6,7 @@ Natural-language reasoning with `LazyLock` declarations.
 
 Construct a decision with `Value::new(inner, const { &[&p, &q] })`. The inner value can be constructed at runtime, including from local borrows. `Value<T>` implements `Deref<Target = T>` and `AsRef<T>`.
 
-Repository, commit, and source declarations use the same macro names as `simplog`. The `github_commit!` and `source_github!` macros accept the referenced declaration's path without `&`. Source metadata uses `GitOid`, `PathBuf`, and `Url`. The `source_html_page!` macro accepts a URL string literal and constructs its `Url` with `url_macro::url!`.
+Repository, commit, and source declarations use the same macro names as `simplog_direct`. The `github_commit!` and `source_github!` macros accept the referenced declaration's path without `&`. Source metadata uses `GitOid`, `PathBuf`, and `Url`. The `source_html_page!` macro accepts a URL string literal and constructs its `Url` with `url_macro::url!`.
 
 An axiom's optional source argument accepts `impl Into<Option<Source>>`. For a source declared with `source_html_page!` or `source_github!`, pass `source.clone()`.
 
@@ -18,4 +18,4 @@ cargo build -p simplog_lazy_lock --example two_plus_two_lazy_lock
 cargo run -p simplog_lazy_lock --example ll_vs_dc_lazy_lock
 ```
 
-The matching direct-construction examples use `-p simplog` and omit the `_lazy_lock` suffix. Distinct target names avoid Cargo output collisions when building the whole workspace. In both versions, `ll_vs_dc` stores its decision in `Value<Construction>`, whose variants are `LazyLock` and `Direct`. Both choose `Direct` under the example's explicit assumptions.
+The matching direct-construction examples use `-p simplog_direct` and omit the `_lazy_lock` suffix. Distinct target names avoid Cargo output collisions when building the whole workspace. In both versions, `ll_vs_dc` stores its decision in `Value<Construction>`, whose variants are `LazyLock` and `Direct`. Both choose `Direct` under the example's explicit assumptions.

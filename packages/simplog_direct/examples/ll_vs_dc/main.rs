@@ -1,6 +1,6 @@
 #![allow(non_upper_case_globals)]
 
-use simplog::{Value, axiom, source_html_page, theorem};
+use simplog_direct::{Value, axiom, source_html_page, theorem};
 
 source_html_page!(lazy_lock_docs, "https://doc.rust-lang.org/std/sync/struct.LazyLock.html");
 

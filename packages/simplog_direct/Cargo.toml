@@ -1,0 +1,42 @@
+[package]
+name = "simplog_direct"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+homepage.workspace = true
+repository.workspace = true
+keywords.workspace = true
+categories.workspace = true
+exclude.workspace = true
+
+[package.metadata.details]
+title = ""
+
+[lints]
+workspace = true
+
+[dependencies]
+derive-getters.workspace = true
+derive-new.workspace = true
+derive_more.workspace = true
+errgonomic.workspace = true
+itertools.workspace = true
+standard-traits.workspace = true
+strum.workspace = true
+stub-macro.workspace = true
+subtype.workspace = true
+git2.workspace = true
+timestamp-please.workspace = true
+interval-zoo.workspace = true
+url.workspace = true
+url-macro.workspace = true
+
+[[example]]
+name = "socrates"
+path = "examples/socrates.rs"
+crate-type = ["lib"]
+
+[[example]]
+name = "two_plus_two"
+path = "examples/two_plus_two.rs"
+crate-type = ["lib"]

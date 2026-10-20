@@ -5,13 +5,13 @@ description: Natural-language reasoning
 
 # Simplog
 
-The `simplog` crate provides types for structured reasoning in natural language.
+The `simplog_direct` crate provides types for structured reasoning in natural language.
 
 ## Definitions
 
 ### Proposition
 
-A `simplog::Prop` value.
+A `simplog_direct::Prop` value.
 
 Aliases: prop.
 
@@ -32,7 +32,7 @@ Aliases: propset.
 
 ### Decide on a value of type T
 
-- Construct a value of `simplog::Value` type:
+- Construct a value of `simplog_direct::Value` type:
   - Provide your reasoning in `dependencies`
 
 ### Review reasoning

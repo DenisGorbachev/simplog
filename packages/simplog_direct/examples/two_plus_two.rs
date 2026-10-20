@@ -1,6 +1,6 @@
 #![allow(non_upper_case_globals)]
 
-use simplog::{axiom, theorem};
+use simplog_direct::{axiom, theorem};
 
 axiom!(successors, "The successor of 0 is 1, of 1 is 2, of 2 is 3, and of 3 is 4");
 axiom!(add_zero, "For every natural number a, a + 0 = a");

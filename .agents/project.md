@@ -1,10 +1,12 @@
 # simplog repo spec
 
+- The root manifest must define a virtual workspace without a root package.
+- Every package must be located under `packages/`.
 - Every Rust source file:
   - May have the following declarations:
     - `use derive_more::{Deref, AsRef};`
 
-## package simplog
+## package simplog_direct
 
 - Every struct except [`Value`](#struct-value) and envelope payload types:
   - Must have a [declaration macro](#macro-declaration-of-t-requirements).
@@ -101,7 +103,7 @@
   - Must include the type's generic arguments.
   - Must initialize the static with a struct literal.
   - Must use const defaults for omitted fields.
-  - Must use `$crate` paths for simplog items.
+  - Must use `$crate` paths for package items.
   - Must evaluate each supplied argument once.
 
 ### Macro declaration of enum E of variant V requirements
@@ -153,7 +155,7 @@ An enum whose variants each contain exactly one tuple field.
 
 ## package simplog_lazy_lock
 
-- Must follow the `simplog` requirements with the following changes.
+- Must follow the `simplog_direct` requirements with the following changes.
 - Every struct:
   - Must derive `new` from `derive-new`.
   - Must use `#[new(into)]` on `String`, `PathBuf`, and `Option` fields.

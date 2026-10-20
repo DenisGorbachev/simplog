@@ -1,6 +1,6 @@
 #![allow(non_upper_case_globals)]
 
-use simplog::{axiom, theorem};
+use simplog_direct::{axiom, theorem};
 
 axiom!(all_humans_are_mortal, "All humans are mortal");
 axiom!(socrates_is_human, "Socrates is human");
