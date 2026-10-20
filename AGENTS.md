@@ -2313,6 +2313,7 @@ age = { type = "age", recipients = [
 
 ```toml
 [workspace]
+members = ["packages/simplog_lazy_lock"]
 resolver = "3"
 
 [workspace.package]
@@ -2351,6 +2352,12 @@ name = "simplog"
 title = ""
 readme = { generate = false }
 
+[workspace.dependencies]
+derive-new = "0.7.0"
+derive_more = { version = "2.1.1", features = ["full"] }
+git2 = "0.21.0"
+url = "2.5.8"
+
 [workspace.lints.rust]
 redundant_imports = "deny"
 unused_import_braces = "deny"
@@ -2380,19 +2387,53 @@ workspace = true
 
 [dependencies]
 derive-getters = { version = "0.5.0", features = ["auto_copy_getters"] }
-derive-new = "0.7.0"
-derive_more = { version = "2.1.1", features = ["full"] }
+derive-new.workspace = true
+derive_more.workspace = true
 errgonomic = { git = "https://github.com/DenisGorbachev/errgonomic" }
 itertools = "0.15.0"
 standard-traits = { git = "https://github.com/DenisGorbachev/standard-traits" }
 strum = { version = "0.28.0", features = ["derive"] }
 stub-macro = { version = "0.3.1" }
 subtype = { git = "https://github.com/DenisGorbachev/subtype" }
-git2 = "0.21.0"
+git2.workspace = true
 timestamp-please = { git = "https://github.com/DenisGorbachev/timestamp-please", features = ["serde", "time"] }
 interval-zoo = { git = "https://github.com/DenisGorbachev/interval-zoo" }
-url = "2.5.8"
+url.workspace = true
 url-macro = "0.2.5"
+```
+
+### packages/simplog_lazy_lock/Cargo.toml
+
+```toml
+[package]
+name = "simplog_lazy_lock"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+homepage.workspace = true
+repository.workspace = true
+keywords.workspace = true
+categories.workspace = true
+exclude.workspace = true
+description = "Natural-language reasoning with lazily initialized propositions"
+
+[lints]
+workspace = true
+
+[dependencies]
+derive-new.workspace = true
+derive_more.workspace = true
+git2.workspace = true
+url.workspace = true
+```
+
+### packages/simplog_lazy_lock/src/lib.rs
+
+```rust
+mod macros;
+
+mod types;
+pub use types::*;
 ```
 
 ### src/lib.rs

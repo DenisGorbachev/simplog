@@ -1,0 +1,20 @@
+[package]
+name = "simplog_lazy_lock"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+homepage.workspace = true
+repository.workspace = true
+keywords.workspace = true
+categories.workspace = true
+exclude.workspace = true
+description = "Natural-language reasoning with lazily initialized propositions"
+
+[lints]
+workspace = true
+
+[dependencies]
+derive-new.workspace = true
+derive_more.workspace = true
+git2.workspace = true
+url.workspace = true

@@ -13,6 +13,6 @@ pub struct Value<T> {
 #[macro_export]
 macro_rules! value {
     ($inner:expr, [$($dependency:path),* $(,)?] $(,)?) => {
-        $crate::Value::new($inner, &[$(&$dependency),*])
+        $crate::Value::new($inner, const { &[$(&$dependency),*] })
     };
 }

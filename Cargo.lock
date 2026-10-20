@@ -594,6 +594,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "simplog_lazy_lock"
+version = "0.1.0"
+dependencies = [
+ "derive-new",
+ "derive_more 2.1.1",
+ "git2",
+ "url",
+]
+
+[[package]]
 name = "smallvec"
 version = "1.16.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
