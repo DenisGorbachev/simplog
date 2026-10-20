@@ -1,1 +1,1 @@
-pub type GitOid = git2::Oid;
+pub type GitOid = gix_hash::ObjectId;

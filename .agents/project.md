@@ -168,9 +168,13 @@ An enum whose variants each contain exactly one tuple field.
 - Every reference to `GithubRepo`, `GithubCommit`, or `Prop`:
   - Must reference `LazyLock<T>`.
 - `GithubCommit::oid`:
-  - Must use `GitOid`, an alias for `git2::Oid`.
+  - Must use `GitOid`, an alias for `gix_hash::ObjectId`.
 - The `github_commit!` and `source_github!` macros:
   - Must accept the referenced declaration's path without `&`.
+- The `github_commit!` macro:
+  - Must accept a hexadecimal string literal encoding a 20-byte SHA-1 object ID.
+  - Must validate literal syntax and decoded length at compile time using `hex_literal::hex!` and `GitOid::Sha1`.
+  - Must also accept a `GitOid` expression.
 - The `source_html_page!` macro:
   - Must accept the string-literal argument accepted by `url_macro::url!`.
   - Must construct the URL with `url_macro::url!`.

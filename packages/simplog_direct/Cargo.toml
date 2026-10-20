@@ -25,11 +25,11 @@ standard-traits.workspace = true
 strum.workspace = true
 stub-macro.workspace = true
 subtype.workspace = true
-git2.workspace = true
 timestamp-please.workspace = true
 interval-zoo.workspace = true
 url.workspace = true
 url-macro.workspace = true
+gix-hash.workspace = true
 
 [[example]]
 name = "socrates"

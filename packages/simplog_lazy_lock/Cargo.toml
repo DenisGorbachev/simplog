@@ -16,7 +16,8 @@ workspace = true
 [dependencies]
 derive-new.workspace = true
 derive_more.workspace = true
-git2.workspace = true
+gix-hash.workspace = true
+hex-literal.workspace = true
 url.workspace = true
 url-macro.workspace = true
 

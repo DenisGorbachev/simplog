@@ -697,9 +697,13 @@ An enum whose variants each contain exactly one tuple field.
 - Every reference to `GithubRepo`, `GithubCommit`, or `Prop`:
   - Must reference `LazyLock<T>`.
 - `GithubCommit::oid`:
-  - Must use `GitOid`, an alias for `git2::Oid`.
+  - Must use `GitOid`, an alias for `gix_hash::ObjectId`.
 - The `github_commit!` and `source_github!` macros:
   - Must accept the referenced declaration's path without `&`.
+- The `github_commit!` macro:
+  - Must accept a hexadecimal string literal encoding a 20-byte SHA-1 object ID.
+  - Must validate literal syntax and decoded length at compile time using `hex_literal::hex!` and `GitOid::Sha1`.
+  - Must also accept a `GitOid` expression.
 - The `source_html_page!` macro:
   - Must accept the string-literal argument accepted by `url_macro::url!`.
   - Must construct the URL with `url_macro::url!`.
@@ -2382,7 +2386,8 @@ readme = { generate = false }
 [workspace.dependencies]
 derive-new = "0.7.0"
 derive_more = { version = "2.1.1", features = ["full"] }
-git2 = "0.21.0"
+gix-hash = { version = "0.28.0", features = ["sha1"] }
+hex-literal = "1.1.0"
 url = "2.5.8"
 derive-getters = { version = "0.5.0", features = ["auto_copy_getters"] }
 errgonomic = { git = "https://github.com/DenisGorbachev/errgonomic" }
@@ -2436,11 +2441,11 @@ standard-traits.workspace = true
 strum.workspace = true
 stub-macro.workspace = true
 subtype.workspace = true
-git2.workspace = true
 timestamp-please.workspace = true
 interval-zoo.workspace = true
 url.workspace = true
 url-macro.workspace = true
+gix-hash.workspace = true
 
 [[example]]
 name = "socrates"
@@ -2474,7 +2479,8 @@ workspace = true
 [dependencies]
 derive-new.workspace = true
 derive_more.workspace = true
-git2.workspace = true
+gix-hash.workspace = true
+hex-literal.workspace = true
 url.workspace = true
 url-macro.workspace = true
 
@@ -2508,6 +2514,8 @@ pub use types::*;
 mod macros;
 
 mod types;
+#[doc(hidden)]
+pub use hex_literal::hex as __hex;
 pub use types::*;
 #[doc(hidden)]
 pub use url_macro::url as __url;

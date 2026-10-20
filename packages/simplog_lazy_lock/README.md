@@ -6,7 +6,7 @@ Natural-language reasoning with `LazyLock` declarations.
 
 Construct a decision with `Value::new(inner, const { &[&p, &q] })`. The inner value can be constructed at runtime, including from local borrows. `Value<T>` implements `Deref<Target = T>` and `AsRef<T>`.
 
-Repository, commit, and source declarations use the same macro names as `simplog_direct`. The `github_commit!` and `source_github!` macros accept the referenced declaration's path without `&`. Source metadata uses `GitOid`, `PathBuf`, and `Url`. The `source_html_page!` macro accepts a URL string literal and constructs its `Url` with `url_macro::url!`.
+Repository, commit, and source declarations use the same macro names as `simplog_direct`. The `github_commit!` and `source_github!` macros accept the referenced declaration's path without `&`. Source metadata uses `GitOid` (an alias for `gix_hash::ObjectId`), `PathBuf`, and `Url`. The `github_commit!` macro accepts a hexadecimal string literal encoding a 20-byte SHA-1 object ID, validated at compile time with `hex_literal::hex!`, or a `GitOid` expression. The `source_html_page!` macro accepts a URL string literal and constructs its `Url` with `url_macro::url!`. Both validation macros are re-exported internally, so callers need only depend on Simplog.
 
 An axiom's optional source argument accepts `impl Into<Option<Source>>`. For a source declared with `source_html_page!` or `source_github!`, pass `source.clone()`.
 

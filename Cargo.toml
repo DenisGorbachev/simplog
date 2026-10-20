@@ -41,7 +41,8 @@ readme = { generate = false }
 [workspace.dependencies]
 derive-new = "0.7.0"
 derive_more = { version = "2.1.1", features = ["full"] }
-git2 = "0.21.0"
+gix-hash = { version = "0.28.0", features = ["sha1"] }
+hex-literal = "1.1.0"
 url = "2.5.8"
 derive-getters = { version = "0.5.0", features = ["auto_copy_getters"] }
 errgonomic = { git = "https://github.com/DenisGorbachev/errgonomic" }

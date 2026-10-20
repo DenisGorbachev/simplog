@@ -10,6 +10,9 @@ pub struct GithubCommit {
 
 #[macro_export]
 macro_rules! github_commit {
+    ($name:ident, $repo:path, $oid:literal) => {
+        $crate::github_commit!($name, $repo, $crate::GitOid::Sha1($crate::__hex!($oid)));
+    };
     ($name:ident, $repo:path, $oid:expr) => {
         $crate::lazy_lock!($name, $crate::GithubCommit, $crate::GithubCommit::new(&$repo, $oid));
     };
