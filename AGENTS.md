@@ -2400,7 +2400,9 @@ url-macro = "0.2.5"
 ```rust
 //! Types for structured logical inference.
 
-mod types;
+mod macros;
+pub(crate) use macros::*;
 
+mod types;
 pub use types::*;
 ```
