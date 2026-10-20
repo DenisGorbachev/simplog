@@ -9,7 +9,6 @@ keywords.workspace = true
 categories.workspace = true
 exclude.workspace = true
 description = "Natural-language reasoning with lazily initialized propositions"
-autoexamples = false
 
 [lints]
 workspace = true
@@ -33,4 +32,4 @@ crate-type = ["lib"]
 
 [[example]]
 name = "ll_vs_dc_lazy_lock"
-path = "examples/ll_vs_dc.rs"
+path = "examples/ll_vs_dc/main.rs"

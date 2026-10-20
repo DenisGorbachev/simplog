@@ -23,6 +23,7 @@ Aliases: propset.
 
 ## Writing propositions
 
+- Minimize the amount of code at macro callsites: use supported shorthand arguments, omit optional defaults, and rely on implicit conversions instead of spelling them out.
 - Use lowercase `snake_case` identifiers for statics.
 - Add `#![allow(non_upper_case_globals)]` at the module level containing those statics.
 - A single-line `content` value must not end with a period.

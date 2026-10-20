@@ -66,7 +66,6 @@ arithmetic_side_effects = "deny"
 
 [package]
 name = "simplog"
-autoexamples = false
 version.workspace = true
 edition.workspace = true
 rust-version.workspace = true
@@ -107,11 +106,3 @@ crate-type = ["lib"]
 name = "two_plus_two"
 path = "examples/two_plus_two.rs"
 crate-type = ["lib"]
-
-[[example]]
-name = "ll_vs_dc"
-path = "examples/ll_vs_dc.rs"
-
-[[example]]
-name = "package_name"
-path = "examples/package_name.rs"

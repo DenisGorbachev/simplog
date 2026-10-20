@@ -8,7 +8,7 @@ Construct a decision with `Value::new(inner, const { &[&p, &q] })`. The inner va
 
 Repository, commit, and source declarations use the same macro names as `simplog`. The `github_commit!` and `source_github!` macros accept the referenced declaration's path without `&`. Source metadata uses `GitOid`, `PathBuf`, and `Url`. The `source_html_page!` macro accepts a URL string literal and constructs its `Url` with `url_macro::url!`.
 
-An axiom's optional source argument is an `Option<Source>`. For a source declared with `source_html_page!` or `source_github!`, pass `Some(source.clone())`.
+An axiom's optional source argument accepts `impl Into<Option<Source>>`. For a source declared with `source_html_page!` or `source_github!`, pass `source.clone()`.
 
 Build the proposition-only library examples and run the decision example from the workspace root:
 

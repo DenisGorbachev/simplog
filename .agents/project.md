@@ -154,9 +154,13 @@ An enum whose variants each contain exactly one tuple field.
 ## package simplog_lazy_lock
 
 - Must follow the `simplog` requirements with the following changes.
+- Every struct:
+  - Must derive `new` from `derive-new`.
+  - Must use `#[new(into)]` on `String`, `PathBuf`, and `Option` fields.
 - Every declaration macro:
   - Must declare a `LazyLock<T>` static.
   - Must construct the value inside its initializer.
+  - Must call the struct or envelope payload's derived constructor instead of using a struct literal.
 - Every string field except `GithubCommit::oid`:
   - Must use an owned type: `String` for text, `PathBuf` for paths, `Url` for URLs.
 - Every reference to `GithubRepo`, `GithubCommit`, or `Prop`:

@@ -1,1 +1,1 @@
-mod declare_lazy;
+mod lazy_lock;
