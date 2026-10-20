@@ -2416,6 +2416,7 @@ keywords.workspace = true
 categories.workspace = true
 exclude.workspace = true
 description = "Natural-language reasoning with lazily initialized propositions"
+autoexamples = false
 
 [lints]
 workspace = true
@@ -2425,6 +2426,18 @@ derive-new.workspace = true
 derive_more.workspace = true
 git2.workspace = true
 url.workspace = true
+
+[[example]]
+name = "socrates_lazy_lock"
+path = "examples/socrates.rs"
+
+[[example]]
+name = "two_plus_two_lazy_lock"
+path = "examples/two_plus_two.rs"
+
+[[example]]
+name = "ll_vs_dc_lazy_lock"
+path = "examples/ll_vs_dc.rs"
 ```
 
 ### packages/simplog_lazy_lock/src/lib.rs
