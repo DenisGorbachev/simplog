@@ -1,4 +1,4 @@
-use crate::{Definition, Prop, Question};
+use crate::{Definition, Prop};
 use derive_more::{AsRef, Deref};
 use derive_new::new;
 use std::sync::LazyLock;
@@ -11,6 +11,4 @@ pub struct Value<T> {
     pub dependencies: &'static [&'static LazyLock<Prop>],
     #[new(default)]
     pub definitions: &'static [&'static LazyLock<Definition>],
-    #[new(default)]
-    pub questions: &'static [&'static LazyLock<Question>],
 }

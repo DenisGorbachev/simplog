@@ -1,4 +1,4 @@
-use crate::{AxiomKind, Definition, Source};
+use crate::{Definition, Source};
 use derive_new::new;
 use std::sync::LazyLock;
 
@@ -8,6 +8,5 @@ pub struct AxiomProp {
     pub statement: String,
     #[new(into)]
     pub source: Option<Source>,
-    pub kind: AxiomKind,
     pub definitions: &'static [&'static LazyLock<Definition>],
 }

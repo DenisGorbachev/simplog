@@ -12,11 +12,13 @@ An axiom's optional source argument accepts `impl Into<Option<Source>>`. For a s
 
 For explanations with explicit terminology, `definition!(name, term, meaning, [definitions], source)` declares a `Definition`. Its trailing definition list and source are optional. Definitions describe meanings; they are not proposition premises. Their links must also be acyclic.
 
-An axiom can specify its role and vocabulary with `axiom!(name, statement, source, kind, [definitions])`, where `kind` is `AxiomKind::Fact`, `Assumption`, or `Requirement`. Older calls use `Unspecified`. The optional definition list defaults to empty.
+An axiom can link its vocabulary with `axiom!(name, statement, source, [definitions])`. The optional definition list defaults to empty. An axiom is an established claim stated without a derivation from other propositions. Being an axiom describes its role in the theory; a separate fact/assumption label adds no logical support. Unverified claims must not be admitted as axioms.
 
-Use `theorem!(name, statement, [premises], inference, [definitions])` to explain the inference separately from the conclusion. The optional inference text and definition list default to empty for older calls. Conditions needed by an inference belong in the statement or its explicit assumption premises. Source evidence, definitions, and inference dependencies occupy separate fields.
+Use `theorem!(name, statement, [premises], [definitions])` for a conclusion that follows obviously from its direct premises. The optional definition list defaults to empty. If the deduction needs explanation, introduce intermediate propositions until each step is obvious. There is no separate inference text. Source evidence, definitions, and proposition dependencies occupy separate fields.
 
-`question!(name, statement, [definitions], [context])` records an unresolved question. The trailing lists are optional. Context links identify relevant propositions without asserting an answer. Questions are not propositions and cannot be passed as theorem premises. A `Value` has separate `definitions` and `questions` slices, initially empty, so callers can attach explanations to a decision while keeping its `dependencies` limited to justification.
+Questions record requests for missing information rather than established claims, so investigation tracking stays outside the theory API. A verified statement that information is absent can still be a proposition. A `Value` has a separate `definitions` slice, initially empty, while its `dependencies` contain its justification.
+
+A conditional proposition such as "If P, then Q" asserts the implication without asserting P. Conditions whose applicability has not been established must remain inside conditional statements; they must not become standalone premises asserting that P holds.
 
 Build the proposition-only library examples and run the decision example from the workspace root:
 

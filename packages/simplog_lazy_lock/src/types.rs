@@ -30,9 +30,3 @@ pub use value::*;
 
 mod definition;
 pub use definition::*;
-
-mod axiom_kind;
-pub use axiom_kind::*;
-
-mod question;
-pub use question::*;
