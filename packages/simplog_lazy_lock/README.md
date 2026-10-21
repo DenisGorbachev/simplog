@@ -10,6 +10,14 @@ Repository, commit, and source declarations use the same macro names as `simplog
 
 An axiom's optional source argument accepts `impl Into<Option<Source>>`. For a source declared with `source_html_page!` or `source_github!`, pass `source.clone()`.
 
+For explanations with explicit terminology, `definition!(name, term, meaning, [definitions], source)` declares a `Definition`. Its trailing definition list and source are optional. Definitions describe meanings; they are not proposition premises. Their links must also be acyclic.
+
+An axiom can specify its role and vocabulary with `axiom!(name, statement, source, kind, [definitions])`, where `kind` is `AxiomKind::Fact`, `Assumption`, or `Requirement`. Older calls use `Unspecified`. The optional definition list defaults to empty.
+
+Use `theorem!(name, statement, [premises], inference, [definitions])` to explain the inference separately from the conclusion. The optional inference text and definition list default to empty for older calls. Conditions needed by an inference belong in the statement or its explicit assumption premises. Source evidence, definitions, and inference dependencies occupy separate fields.
+
+`question!(name, statement, [definitions], [context])` records an unresolved question. The trailing lists are optional. Context links identify relevant propositions without asserting an answer. Questions are not propositions and cannot be passed as theorem premises. A `Value` has separate `definitions` and `questions` slices, initially empty, so callers can attach explanations to a decision while keeping its `dependencies` limited to justification.
+
 Build the proposition-only library examples and run the decision example from the workspace root:
 
 ```sh

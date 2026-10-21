@@ -1,4 +1,4 @@
-use crate::Prop;
+use crate::{Definition, Prop};
 use derive_new::new;
 use std::sync::LazyLock;
 
@@ -7,4 +7,7 @@ pub struct TheoremProp {
     #[new(into)]
     pub statement: String,
     pub dependencies: &'static [&'static LazyLock<Prop>],
+    #[new(into)]
+    pub inference: String,
+    pub definitions: &'static [&'static LazyLock<Definition>],
 }
